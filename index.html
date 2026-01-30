@@ -26,20 +26,16 @@
     }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
-    /* Center UI */
     .center { display:flex; flex-direction:column; align-items:center; gap:14px; padding: 26px 10px; }
 
-    /* Hold button + ring */
+    /* Ring */
     .ringWrap{
       width: 240px; height: 240px;
       position: relative;
       border-radius: 999px;
       display:flex; align-items:center; justify-content:center;
       user-select:none; -webkit-user-select:none;
-      touch-action:none; /* important on mobile */
     }
-
-    /* We draw progress via conic-gradient */
     .ring{
       position:absolute; inset:0;
       border-radius:999px;
@@ -48,7 +44,6 @@
       filter: drop-shadow(0 0 18px rgba(255,255,255,.08));
       transition: filter .15s ease;
     }
-
     .inner{
       width: 190px; height: 190px;
       border-radius: 999px;
@@ -60,7 +55,6 @@
       z-index: 2;
       transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
     }
-
     .cta{
       font-weight: 900;
       letter-spacing: .6px;
@@ -68,12 +62,10 @@
       font-size: 14px;
       opacity: .95;
     }
-
     .hint{
       font-size: 12px;
       color: var(--muted2);
     }
-
     .status{
       margin-top: 8px;
       color: var(--muted);
@@ -82,7 +74,7 @@
       text-align:center;
     }
 
-    /* Pressed state */
+    /* Hold-down visual state (when finger is down on the Tap button) */
     .pressed .inner{
       transform: scale(0.98);
       box-shadow: 0 0 0 2px rgba(255,255,255,.06), 0 0 24px rgba(255,255,255,.10);
@@ -100,6 +92,14 @@
     .success .inner{
       border-color: rgba(80,255,170,.25);
       box-shadow: 0 0 0 2px rgba(80,255,170,.10), 0 0 24px rgba(80,255,170,.18);
+    }
+
+    /* Button tweaks */
+    #holdBtn{
+      min-width: 140px;
+      touch-action: none;  /* important */
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     /* Popup */
@@ -129,14 +129,15 @@
             <div id="ring" class="ring"></div>
             <div class="inner">
               <div id="cta" class="cta">Hold to lock entry</div>
-              <div id="sub" class="hint">Release cancels</div>
+              <div id="sub" class="hint">Keep finger down</div>
             </div>
           </div>
 
           <div id="status" class="status"></div>
 
           <div class="buttons">
-            <button id="autoBtn" class="button is-primary">Tap</button>
+            <!-- This is now the HOLD CONTROL -->
+            <button id="holdBtn" class="button is-primary">Tap</button>
           </div>
         </div>
       </div>
@@ -146,7 +147,7 @@
   <div id="overlay"></div>
   <div id="popup">
     <h2 class="title is-4">ENTRY LOCKED ✅</h2>
-    <p style="margin-top:8px;">This is the “submitted” state (no backend).</p>
+    <p style="margin-top:8px;">Submitted (no backend).</p>
     <div style="margin-top:16px; text-align:right;">
       <button id="closePopup" class="button is-primary">OK</button>
     </div>
@@ -154,8 +155,8 @@
 
 <script>
   // ===== SETTINGS =====
-  const HOLD_MS = 7000;   // change to 5000 if you want faster
-  const LOADING_MS = 600; // simulated “submitting…” delay after hold completes
+  const HOLD_MS = 7000;   // adjust later (club usually feels better at 4–6s)
+  const LOADING_MS = 600;
 
   // ===== ELEMENTS =====
   const wrap = document.getElementById("wrap");
@@ -164,11 +165,11 @@
   const cta = document.getElementById("cta");
   const sub = document.getElementById("sub");
 
+  const holdBtn = document.getElementById("holdBtn");
+
   const overlay = document.getElementById("overlay");
   const popup = document.getElementById("popup");
   const closePopup = document.getElementById("closePopup");
-
-  const autoBtn = document.getElementById("autoBtn");
 
   // ===== STATE =====
   let holding = false;
@@ -180,7 +181,6 @@
   function setDeg(deg){
     ring.style.setProperty("--deg", `${deg}deg`);
   }
-
   function show(text){ status.textContent = text; }
 
   function showPopup(){
@@ -201,9 +201,11 @@
     loading = false;
     wrap.classList.remove("pressed","success");
     cta.textContent = "Hold to lock entry";
-    sub.textContent = "Release cancels";
-    show("");          // ✅ removed “Ready.”
+    sub.textContent = "Keep finger down";
+    show("");
     setDeg(0);
+    holdBtn.disabled = false;
+    holdBtn.textContent = "Tap";
     if (raf) cancelAnimationFrame(raf);
     raf = null;
   }
@@ -214,6 +216,8 @@
     cta.textContent = "Submitting…";
     sub.textContent = "Please wait";
     wrap.classList.remove("pressed");
+    holdBtn.disabled = true;
+    holdBtn.textContent = "Submitting…";
 
     await new Promise(r => setTimeout(r, LOADING_MS));
 
@@ -252,42 +256,46 @@
     startAt = Date.now();
     wrap.classList.add("pressed");
 
-    show("Holding… don’t release.");
+    show(""); // keep minimal
     cta.textContent = "Holding…";
     sub.textContent = `${Math.round(HOLD_MS/1000)}s to lock`;
 
     tick();
   }
 
-  function endHold(e){
+  function cancelHold(e){
     if (!holding) return;
     e.preventDefault();
 
     holding = false;
     wrap.classList.remove("pressed");
 
-    show("Released too early — try again.");
     cta.textContent = "Hold to lock entry";
-    sub.textContent = "Release cancels";
-
+    sub.textContent = "Keep finger down";
     setDeg(0);
+
     if (raf) cancelAnimationFrame(raf);
     raf = null;
 
-    if (navigator.vibrate) navigator.vibrate(20);
+    if (navigator.vibrate) navigator.vibrate(15);
   }
 
-  // Pointer events work on iOS/Android modern browsers
-  wrap.addEventListener("pointerdown", startHold);
-  window.addEventListener("pointerup", endHold);
-  window.addEventListener("pointercancel", endHold);
+  // ✅ HOLD MUST HAPPEN ON THE BUTTON (not the circle)
+  holdBtn.addEventListener("pointerdown", startHold);
+  holdBtn.addEventListener("pointerup", cancelHold);
+  holdBtn.addEventListener("pointercancel", cancelHold);
+  holdBtn.addEventListener("pointerleave", cancelHold);
 
-  // Auto demo (for testing) — Tap simulates a full hold
-  autoBtn.addEventListener("click", async () => {
-    if (locked || loading) return;
-    startHold(new Event("pointerdown"));
-    await new Promise(r => setTimeout(r, HOLD_MS + 50));
-  });
+  // Prevent “click” from doing anything weird
+  holdBtn.addEventListener("click", (e) => e.preventDefault());
+
+  // Optional: double-tap anywhere to reset (dev convenience)
+  let lastTap = 0;
+  window.addEventListener("touchend", () => {
+    const now = Date.now();
+    if (now - lastTap < 300) resetAll();
+    lastTap = now;
+  }, {passive:true});
 
   resetAll();
 </script>
