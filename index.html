@@ -122,12 +122,14 @@
     <div class="container" style="max-width: 620px;">
       <div class="box">
         <div class="center">
-          <div class="title is-3 mono" style="margin-bottom:0;">HOLD TO LOCK ENTRY</div>
+          <div class="has-text-grey-light">Your ID</div>
+          <div class="title is-3 mono" style="margin-bottom:0;">USER 0142</div>
 
           <div id="wrap" class="ringWrap" aria-label="Hold to lock entry">
             <div id="ring" class="ring"></div>
             <div class="inner">
-              <div id="cta" class="cta">Keep your finger on the button</div>
+              <div id="cta" class="cta">Hold to lock entry</div>
+              <div id="sub" class="hint">Keep finger down</div>
             </div>
           </div>
 
@@ -256,7 +258,7 @@
 
     show(""); // keep minimal
     cta.textContent = "Holding…";
-    sub.textContent = `${Math.round(HOLD_MS/1000)}s to lock`;
+    sub.textContent = "Hold to confirm";
 
     tick();
   }
