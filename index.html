@@ -16,7 +16,8 @@
       --bar2:rgba(255,255,255,.18);
       --success:rgba(80, 255, 170, .95);
     }
-    body { background: var(--bg); color: var(--text); }
+    html, body { height: 100%; margin: 0; background: var(--bg); }
+    body { min-height: 100vh; color: var(--text); }
 
     .box {
       background: var(--card);
@@ -27,23 +28,30 @@
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
     .center { display:flex; flex-direction:column; align-items:center; gap:14px; padding: 26px 10px; }
+    .logo{
+      width: 220px;
+      max-width: 80vw;
+      height: auto;
+      margin-bottom: 8px;
+      display: block;
+    }
 
     /* ===== Vertical Bar ===== */
     .barWrap{
-      width: 240px; height: 240px;
+      width: 240px; height: auto;
       position: relative;
       border-radius: 18px;
-      display:flex; align-items:center; justify-content:center;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap: 6px;
+      padding: 12px 0;
       user-select:none; -webkit-user-select:none;
     }
 
     /* track */
     .barTrack{
-      position:absolute;
-      left: 26px;
-      top: 22px;
-      bottom: 22px;
-      width: 16px;
+      position:relative;
+      width: 60px;
+      height: 200px;
       border-radius: 999px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.08);
@@ -62,27 +70,31 @@
       transition: height 0.06s linear;
     }
 
-    .inner{
-      width: 190px; height: 190px;
-      border-radius: 18px;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.08);
+    .copy{
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap: 8px;
+      gap: 4px;
+      margin-top: 26px;
       position:relative;
       z-index: 2;
-      transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+      text-align: center;
     }
     .cta{
       font-weight: 900;
       letter-spacing: .6px;
       text-transform: uppercase;
-      font-size: 14px;
+      font-size: 1.15rem;
       opacity: .95;
+    }
+    .cta.locked{
+      color: var(--success);
     }
     .hint{
       font-size: 12px;
       color: var(--muted2);
+    }
+    .hint.locked{
+      font-size: 1.15rem;
+      font-weight: 700;
     }
     .status{
       margin-top: 8px;
@@ -93,11 +105,6 @@
     }
 
     /* Hold-down visual state */
-    .pressed .inner{
-      transform: scale(0.98);
-      box-shadow: 0 0 0 2px rgba(255,255,255,.06), 0 0 24px rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.18);
-    }
     .pressed .barTrack{
       filter: drop-shadow(0 0 26px rgba(255,255,255,.14));
     }
@@ -106,9 +113,40 @@
     .success .barFill{
       background: linear-gradient(to top, rgba(80,255,170,.95), rgba(80,255,170,.22));
     }
-    .success .inner{
-      border-color: rgba(80,255,170,.25);
-      box-shadow: 0 0 0 2px rgba(80,255,170,.10), 0 0 24px rgba(80,255,170,.18);
+    .sparkShower{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 20;
+    }
+    body.shower .sparkShower{
+      opacity: 1;
+    }
+    .spark{
+      position: absolute;
+      width: 3px;
+      height: 14px;
+      background: rgba(80,255,170,.95);
+      box-shadow: 0 0 12px rgba(80,255,170,.75);
+      border-radius: 2px;
+      animation: shower 900ms ease-out infinite;
+    }
+    .spark.s1{ left: 10%; top: -5%; animation-delay: 0ms; }
+    .spark.s2{ left: 25%; top: -8%; animation-delay: 80ms; }
+    .spark.s3{ left: 40%; top: -6%; animation-delay: 140ms; }
+    .spark.s4{ left: 55%; top: -7%; animation-delay: 200ms; }
+    .spark.s5{ left: 70%; top: -9%; animation-delay: 260ms; }
+    .spark.s6{ left: 85%; top: -5%; animation-delay: 320ms; }
+    .spark.s7{ left: 15%; top: -10%; animation-delay: 380ms; }
+    .spark.s8{ left: 32%; top: -12%; animation-delay: 440ms; }
+    .spark.s9{ left: 62%; top: -11%; animation-delay: 520ms; }
+    .spark.s10{ left: 78%; top: -9%; animation-delay: 600ms; }
+
+    @keyframes shower{
+      0% { transform: translateY(-10vh) rotate(8deg); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(18deg); opacity: 0; }
     }
 
     /* Button tweaks */
@@ -117,20 +155,14 @@
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .buttons{
+      margin-top: 4px;
+      margin-bottom: 0;
     }
 
-    /* Popup */
-    #overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.62); z-index: 50; }
-    #popup {
-      display:none;
-      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background:#fff; color:#111;
-      padding: 26px;
-      border-radius: 14px;
-      width: min(520px, 92vw);
-      z-index: 60;
-      box-shadow: 0 10px 40px rgba(0,0,0,.45);
-    }
   </style>
 </head>
 
@@ -139,17 +171,17 @@
     <div class="container" style="max-width: 620px;">
       <div class="box">
         <div class="center">
-          <div class="has-text-grey-light">Your ID</div>
-          <div class="title is-3 mono" style="margin-bottom:0;">USER 0142</div>
+          <img class="logo" src="assets/tx-logo.png" alt="IQOS Together X">
 
           <div id="wrap" class="barWrap" aria-label="Hold to lock entry">
             <div id="track" class="barTrack">
               <div id="fill" class="barFill"></div>
             </div>
 
-            <div class="inner">
+
+            <div class="copy">
               <div id="cta" class="cta">Hold to lock entry</div>
-              <div id="sub" class="hint">Keep finger down</div>
+              <div id="sub" class="hint"></div>
             </div>
           </div>
 
@@ -163,19 +195,23 @@
     </div>
   </section>
 
-  <div id="overlay"></div>
-  <div id="popup">
-    <h2 class="title is-4">ENTRY LOCKED ✅</h2>
-    <p style="margin-top:8px;">Submitted (no backend).</p>
-    <div style="margin-top:16px; text-align:right;">
-      <button id="closePopup" class="button is-primary">OK</button>
-    </div>
+  <div class="sparkShower" aria-hidden="true">
+    <span class="spark s1"></span>
+    <span class="spark s2"></span>
+    <span class="spark s3"></span>
+    <span class="spark s4"></span>
+    <span class="spark s5"></span>
+    <span class="spark s6"></span>
+    <span class="spark s7"></span>
+    <span class="spark s8"></span>
+    <span class="spark s9"></span>
+    <span class="spark s10"></span>
   </div>
 
 <script>
   // ===== SETTINGS =====
-  const HOLD_MS = 3000;
-  const LOADING_MS = 600;
+  const HOLD_MS = 1800;
+  const LOADING_MS = 0;
 
   // ===== ELEMENTS =====
   const wrap = document.getElementById("wrap");
@@ -183,12 +219,7 @@
   const status = document.getElementById("status");
   const cta = document.getElementById("cta");
   const sub = document.getElementById("sub");
-
   const holdBtn = document.getElementById("holdBtn");
-
-  const overlay = document.getElementById("overlay");
-  const popup = document.getElementById("popup");
-  const closePopup = document.getElementById("closePopup");
 
   // ===== STATE =====
   let holding = false;
@@ -203,25 +234,18 @@
   }
   function show(text){ status.textContent = text; }
 
-  function showPopup(){
-    overlay.style.display = "block";
-    popup.style.display = "block";
-  }
-  function hidePopup(){
-    overlay.style.display = "none";
-    popup.style.display = "none";
-  }
-  closePopup.addEventListener("click", hidePopup);
-  overlay.addEventListener("click", hidePopup);
 
   function resetAll(){
     holding = false;
     startAt = 0;
     locked = false;
     loading = false;
+    document.body.classList.remove("shower");
     wrap.classList.remove("pressed","success");
     cta.textContent = "Hold to lock entry";
-    sub.textContent = "Keep finger down";
+    cta.classList.remove("locked");
+    sub.textContent = "";
+    sub.classList.remove("locked");
     show("");
     setFill(0);
     holdBtn.disabled = false;
@@ -232,25 +256,22 @@
 
   async function onComplete(){
     loading = true;
-    show("Submitting…");
-    cta.textContent = "Submitting…";
-    sub.textContent = "Please wait";
     wrap.classList.remove("pressed");
     holdBtn.disabled = true;
-    holdBtn.textContent = "Submitting…";
-
-    await new Promise(r => setTimeout(r, LOADING_MS));
+    if (LOADING_MS > 0) await new Promise(r => setTimeout(r, LOADING_MS));
 
     loading = false;
     locked = true;
     wrap.classList.add("success");
+    document.body.classList.add("shower");
     cta.textContent = "Entry locked";
-    sub.textContent = "Good luck";
-    show("Submitted ✅");
+    cta.classList.add("locked");
+    sub.textContent = "Watch for the signal";
+    sub.classList.add("locked");
+    show("");
     setFill(1);
 
     if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
-    showPopup();
   }
 
   function tick(){
@@ -278,7 +299,9 @@
 
     show("");
     cta.textContent = "Holding…";
-    sub.textContent = "Hold to confirm";
+    cta.classList.remove("locked");
+    sub.textContent = "";
+    sub.classList.remove("locked");
 
     tick();
   }
@@ -291,21 +314,21 @@
     wrap.classList.remove("pressed");
 
     cta.textContent = "Hold to lock entry";
-    sub.textContent = "Keep finger down";
+    cta.classList.remove("locked");
+    sub.textContent = "";
+    sub.classList.remove("locked");
     setFill(0);
-
     if (raf) cancelAnimationFrame(raf);
     raf = null;
 
     if (navigator.vibrate) navigator.vibrate(15);
   }
 
-  // HOLD on the button
+  // Hold on the button to fill
   holdBtn.addEventListener("pointerdown", startHold);
   holdBtn.addEventListener("pointerup", cancelHold);
   holdBtn.addEventListener("pointercancel", cancelHold);
   holdBtn.addEventListener("pointerleave", cancelHold);
-
   holdBtn.addEventListener("click", (e) => e.preventDefault());
 
   // Optional: double-tap anywhere to reset
