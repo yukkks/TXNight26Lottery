@@ -155,7 +155,7 @@
 
 <script>
   // ===== SETTINGS =====
-  const HOLD_MS = 4000;   // adjust later (club usually feels better at 4–6s)
+  const HOLD_MS = 7000;   // adjust later (club usually feels better at 4–6s)
   const LOADING_MS = 600;
 
   // ===== ELEMENTS =====
@@ -258,7 +258,7 @@
 
     show(""); // keep minimal
     cta.textContent = "Holding…";
-    sub.textContent = "Hold to confirm";
+    sub.textContent = `${Math.round(HOLD_MS/1000)}s to lock`;
 
     tick();
   }
