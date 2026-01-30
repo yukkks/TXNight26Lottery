@@ -12,8 +12,8 @@
       --text:#ffffff;
       --muted:rgba(255,255,255,.72);
       --muted2:rgba(255,255,255,.42);
-      --ring:rgba(255,255,255,.9);
-      --ring2:rgba(255,255,255,.25);
+      --bar:rgba(255,255,255,.9);
+      --bar2:rgba(255,255,255,.18);
       --success:rgba(80, 255, 170, .95);
     }
     body { background: var(--bg); color: var(--text); }
@@ -28,25 +28,43 @@
 
     .center { display:flex; flex-direction:column; align-items:center; gap:14px; padding: 26px 10px; }
 
-    /* Ring */
-    .ringWrap{
+    /* ===== Vertical Bar ===== */
+    .barWrap{
       width: 240px; height: 240px;
       position: relative;
-      border-radius: 999px;
+      border-radius: 18px;
       display:flex; align-items:center; justify-content:center;
       user-select:none; -webkit-user-select:none;
     }
-    .ring{
-      position:absolute; inset:0;
-      border-radius:999px;
-      background:
-        conic-gradient(var(--ring) 0deg, var(--ring) var(--deg), var(--ring2) var(--deg), var(--ring2) 360deg);
-      filter: drop-shadow(0 0 18px rgba(255,255,255,.08));
+
+    /* track */
+    .barTrack{
+      position:absolute;
+      left: 26px;
+      top: 22px;
+      bottom: 22px;
+      width: 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      overflow:hidden;
+      filter: drop-shadow(0 0 18px rgba(255,255,255,.06));
       transition: filter .15s ease;
     }
+
+    /* fill (bottom -> top) */
+    .barFill{
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height: var(--h, 0%);
+      background: linear-gradient(to top, var(--bar), var(--bar2));
+      border-radius: 999px;
+      transition: height 0.06s linear;
+    }
+
     .inner{
       width: 190px; height: 190px;
-      border-radius: 999px;
+      border-radius: 18px;
       background: rgba(0,0,0,.35);
       border: 1px solid rgba(255,255,255,.08);
       display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -74,20 +92,19 @@
       text-align:center;
     }
 
-    /* Hold-down visual state (when finger is down on the Tap button) */
+    /* Hold-down visual state */
     .pressed .inner{
       transform: scale(0.98);
       box-shadow: 0 0 0 2px rgba(255,255,255,.06), 0 0 24px rgba(255,255,255,.10);
       border-color: rgba(255,255,255,.18);
     }
-    .pressed .ring{
-      filter: drop-shadow(0 0 26px rgba(255,255,255,.16));
+    .pressed .barTrack{
+      filter: drop-shadow(0 0 26px rgba(255,255,255,.14));
     }
 
     /* Success state */
-    .success .ring{
-      background: conic-gradient(var(--success) 0deg, var(--success) 360deg);
-      filter: drop-shadow(0 0 26px rgba(80,255,170,.22));
+    .success .barFill{
+      background: linear-gradient(to top, rgba(80,255,170,.95), rgba(80,255,170,.22));
     }
     .success .inner{
       border-color: rgba(80,255,170,.25);
@@ -97,7 +114,7 @@
     /* Button tweaks */
     #holdBtn{
       min-width: 140px;
-      touch-action: none;  /* important */
+      touch-action: none;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -125,8 +142,11 @@
           <div class="has-text-grey-light">Your ID</div>
           <div class="title is-3 mono" style="margin-bottom:0;">USER 0142</div>
 
-          <div id="wrap" class="ringWrap" aria-label="Hold to lock entry">
-            <div id="ring" class="ring"></div>
+          <div id="wrap" class="barWrap" aria-label="Hold to lock entry">
+            <div id="track" class="barTrack">
+              <div id="fill" class="barFill"></div>
+            </div>
+
             <div class="inner">
               <div id="cta" class="cta">Hold to lock entry</div>
               <div id="sub" class="hint">Keep finger down</div>
@@ -136,7 +156,6 @@
           <div id="status" class="status"></div>
 
           <div class="buttons">
-            <!-- This is now the HOLD CONTROL -->
             <button id="holdBtn" class="button is-primary">Tap</button>
           </div>
         </div>
@@ -155,12 +174,12 @@
 
 <script>
   // ===== SETTINGS =====
-  const HOLD_MS = 3000;   // adjust later (club usually feels better at 4–6s)
+  const HOLD_MS = 3000;
   const LOADING_MS = 600;
 
   // ===== ELEMENTS =====
   const wrap = document.getElementById("wrap");
-  const ring = document.getElementById("ring");
+  const fill = document.getElementById("fill");
   const status = document.getElementById("status");
   const cta = document.getElementById("cta");
   const sub = document.getElementById("sub");
@@ -178,8 +197,9 @@
   let locked = false;
   let loading = false;
 
-  function setDeg(deg){
-    ring.style.setProperty("--deg", `${deg}deg`);
+  function setFill(pct){
+    const clamped = Math.max(0, Math.min(1, pct));
+    fill.style.setProperty("--h", `${clamped * 100}%`);
   }
   function show(text){ status.textContent = text; }
 
@@ -203,7 +223,7 @@
     cta.textContent = "Hold to lock entry";
     sub.textContent = "Keep finger down";
     show("");
-    setDeg(0);
+    setFill(0);
     holdBtn.disabled = false;
     holdBtn.textContent = "Tap";
     if (raf) cancelAnimationFrame(raf);
@@ -227,7 +247,7 @@
     cta.textContent = "Entry locked";
     sub.textContent = "Good luck";
     show("Submitted ✅");
-    setDeg(360);
+    setFill(1);
 
     if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
     showPopup();
@@ -237,7 +257,7 @@
     if (!holding) return;
     const elapsed = Date.now() - startAt;
     const pct = Math.min(1, elapsed / HOLD_MS);
-    setDeg(pct * 360);
+    setFill(pct);
 
     if (elapsed >= HOLD_MS){
       holding = false;
@@ -256,7 +276,7 @@
     startAt = Date.now();
     wrap.classList.add("pressed");
 
-    show(""); // keep minimal
+    show("");
     cta.textContent = "Holding…";
     sub.textContent = "Hold to confirm";
 
@@ -272,7 +292,7 @@
 
     cta.textContent = "Hold to lock entry";
     sub.textContent = "Keep finger down";
-    setDeg(0);
+    setFill(0);
 
     if (raf) cancelAnimationFrame(raf);
     raf = null;
@@ -280,16 +300,15 @@
     if (navigator.vibrate) navigator.vibrate(15);
   }
 
-  // ✅ HOLD MUST HAPPEN ON THE BUTTON (not the circle)
+  // HOLD on the button
   holdBtn.addEventListener("pointerdown", startHold);
   holdBtn.addEventListener("pointerup", cancelHold);
   holdBtn.addEventListener("pointercancel", cancelHold);
   holdBtn.addEventListener("pointerleave", cancelHold);
 
-  // Prevent “click” from doing anything weird
   holdBtn.addEventListener("click", (e) => e.preventDefault());
 
-  // Optional: double-tap anywhere to reset (dev convenience)
+  // Optional: double-tap anywhere to reset
   let lastTap = 0;
   window.addEventListener("touchend", () => {
     const now = Date.now();
