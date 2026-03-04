@@ -29,6 +29,7 @@
       min-height: 100vh;
       color: var(--text);
       font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 16px;
       background:
         radial-gradient(1200px 500px at 50% -10%, rgba(255,255,255,.06), rgba(0,0,0,0)),
         linear-gradient(180deg, #0a1124 0%, #040815 60%, #030611 100%);
@@ -66,7 +67,7 @@
 
     .box {
       background: var(--card);
-      border-radius: 18px;
+      border-radius: 28px;
       box-shadow: 0 8px 30px rgba(0,0,0,.45);
       border: 1px solid rgba(255,255,255,.06);
       outline: 1px solid rgba(0,210,211,.12);
@@ -227,11 +228,175 @@
       z-index: 2;
       text-align: center;
     }
+    .label{
+      font-size: 16px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--success);
+      text-align: center;
+      margin-top: var(--space-2);
+    }
+    .formWrap{
+      width: min(280px, 76vw);
+      display:flex;
+      flex-direction:column;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+    .input{
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 16px;
+      background: rgba(255,255,255,.08);
+      outline: none;
+      box-shadow: inset 0 0 18px rgba(0,0,0,.45);
+    }
+    .input::placeholder{ color: rgba(255,255,255,.35); }
+    .input:focus{
+      border-color: rgba(0,210,211,.55);
+      box-shadow: inset 0 0 18px rgba(0,0,0,.45), 0 0 12px rgba(0,210,211,.18);
+    }
+    .step{
+      display: none;
+      width: 100%;
+    }
+    .step.active{
+      display: block;
+    }
+    .popupOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display: none;
+      z-index: 60;
+    }
+    .popup{
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      z-index: 70;
+    }
+    .popupCard{
+      width: min(360px, 86vw);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.08);
+      outline: 1px solid rgba(0,210,211,.12);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+    .popupText{
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .correctText{
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: #ffffff;
+    }
+    /* Full-screen spark shower (correct answer) */
+    .correctShower{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 80;
+    }
+    body.correctOn .correctShower{
+      opacity: 1;
+    }
+    .cspark{
+      position: absolute;
+      width: 3px;
+      height: 16px;
+      background: rgba(0,210,211,.95);
+      box-shadow: 0 0 12px rgba(0,210,211,.75);
+      border-radius: 2px;
+      animation: shower 900ms var(--ease) infinite;
+    }
+    .cspark.c1{ left: 8%; top: -8%; animation-delay: 0ms; }
+    .cspark.c2{ left: 18%; top: -10%; animation-delay: 80ms; }
+    .cspark.c3{ left: 28%; top: -9%; animation-delay: 140ms; }
+    .cspark.c4{ left: 38%; top: -11%; animation-delay: 200ms; }
+    .cspark.c5{ left: 48%; top: -8%; animation-delay: 260ms; }
+    .cspark.c6{ left: 58%; top: -12%; animation-delay: 320ms; }
+    .cspark.c7{ left: 68%; top: -9%; animation-delay: 380ms; }
+    .cspark.c8{ left: 78%; top: -10%; animation-delay: 440ms; }
+    .cspark.c9{ left: 88%; top: -8%; animation-delay: 520ms; }
+    .choices{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+    .choiceBtn{
+      padding: 12px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .wheelWrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+    .wheel{
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,210,211,.4);
+      background:
+        conic-gradient(
+          rgba(0,210,211,.65) 0deg 45deg,
+          rgba(255,255,255,.06) 45deg 90deg,
+          rgba(0,210,211,.45) 90deg 135deg,
+          rgba(255,255,255,.06) 135deg 180deg,
+          rgba(0,210,211,.65) 180deg 225deg,
+          rgba(255,255,255,.06) 225deg 270deg,
+          rgba(0,210,211,.45) 270deg 315deg,
+          rgba(255,255,255,.06) 315deg 360deg
+        );
+      box-shadow: inset 0 0 18px rgba(0,0,0,.55), 0 0 18px rgba(0,210,211,.2);
+      position: relative;
+      transition: transform 5s var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .wheelText{
+      position: absolute;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .wheelText.t1{ transform: rotate(-67.5deg) translateY(-70px); }
+    .wheelText.t2{ transform: rotate(22.5deg) translateY(-70px); }
+    .wheelText.t3{ transform: rotate(112.5deg) translateY(-70px); }
+    .wheelText.t4{ transform: rotate(202.5deg) translateY(-70px); }
+    .wheel::after{
+      content: none;
+    }
     .cta{
       font-weight: 900;
       letter-spacing: .6px;
       text-transform: uppercase;
-      font-size: 1.3rem;
+      font-size: 16px;
       opacity: .95;
       color: #ffffff;
     }
@@ -239,23 +404,23 @@
       color: var(--success);
     }
     .hint{
-      font-size: 12px;
+      font-size: 16px;
       color: var(--muted2);
     }
     .hint.locked{
-      font-size: 1.15rem;
+      font-size: 16px;
       font-weight: 700;
     }
     .status{
       margin-top: var(--space-2);
       color: var(--muted);
-      font-size: 13px;
+      font-size: 16px;
       min-height: 20px;
       text-align:center;
     }
     .hud{
       margin-top: 0;
-      font-size: 11px;
+      font-size: 16px;
       color: rgba(0,210,211,.75);
       letter-spacing: .6px;
       text-transform: uppercase;
@@ -269,7 +434,7 @@
       color: var(--success);
       border: 1px solid rgba(0,210,211,.35);
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 16px;
       letter-spacing: .4px;
       text-transform: uppercase;
     }
@@ -277,7 +442,7 @@
       display:none;
       margin-top: var(--space-2);
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 16px;
       letter-spacing: .4px;
       color: var(--success);
       text-transform: uppercase;
@@ -395,38 +560,6 @@
       100% { transform: translateY(110vh) rotate(18deg); opacity: 0; }
     }
 
-    .confetti{
-      position:absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0;
-    }
-    .success .confetti{
-      opacity: 1;
-    }
-    .confetti i{
-      position:absolute;
-      width: 6px;
-      height: 10px;
-      background: rgba(0,210,211,.95);
-      box-shadow: 0 0 10px rgba(0,210,211,.6);
-      border-radius: 2px;
-      animation: burst 800ms var(--ease) infinite;
-    }
-    .confetti i:nth-child(1){ left: 50%; bottom: 10px; transform: rotate(12deg); animation-delay: 0ms; }
-    .confetti i:nth-child(2){ left: 40%; bottom: 0; transform: rotate(-8deg); animation-delay: 80ms; }
-    .confetti i:nth-child(3){ left: 60%; bottom: 4px; transform: rotate(18deg); animation-delay: 140ms; }
-    .confetti i:nth-child(4){ left: 30%; bottom: 6px; transform: rotate(-16deg); animation-delay: 200ms; }
-    .confetti i:nth-child(5){ left: 70%; bottom: 2px; transform: rotate(22deg); animation-delay: 260ms; }
-    .confetti i:nth-child(6){ left: 20%; bottom: 8px; transform: rotate(-20deg); animation-delay: 320ms; }
-    .confetti i:nth-child(7){ left: 80%; bottom: 6px; transform: rotate(16deg); animation-delay: 380ms; }
-
-    @keyframes burst{
-      0% { transform: translateY(0) scale(1); opacity: 0; }
-      15% { opacity: 1; }
-      70% { transform: translateY(-26px) scale(0.9); opacity: 0.9; }
-      100% { transform: translateY(-40px) scale(0.6); opacity: 0; }
-    }
 
     /* Button tweaks */
     #holdBtn{
@@ -436,13 +569,24 @@
       user-select: none;
       -webkit-user-select: none;
       font-weight: 700;
-      font-size: 1.15rem;
+      font-size: 16px;
       filter: brightness(0.92);
     }
     .buttons{
       margin-top: 2px;
       margin-bottom: 0;
+      display: flex;
+      justify-content: center;
     }
+    .ctaBtn{
+      background: #00D2D3 !important;
+      border-color: #00D2D3 !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .ctaBtn:hover{ background: #08dbdc !important; border-color: #08dbdc !important; }
+    .ctaBtn:active{ background: #00bfc0 !important; border-color: #00bfc0 !important; }
 
     /* Success flash */
     .flash{
@@ -479,51 +623,54 @@
 </head>
 
 <body>
-  <section class="section">
+  <section class="section is-flex is-align-items-center is-justify-content-center" style="min-height: 100vh; padding-top: 10vh;">
     <div class="container" style="max-width: 620px;">
       <div class="box">
         <div class="sweep" aria-hidden="true"></div>
         <div class="center">
-          <img class="logo" src="TX%20Logo.png" alt="IQOS Together X">
+          <div id="step1" class="step active" style="text-align:center;">
+            <img class="logo" src="assets/tx-logo.png" alt="IQOS Together X" style="margin-bottom: var(--space-2); margin-left:auto; margin-right:auto;">
+            <div class="cta" style="font-size: 16px; letter-spacing: .8px; margin-bottom: var(--space-2); text-align:center;">WELCOME TO PMJ TOWNHALL</div>
 
-          <div id="wrap" class="barWrap" aria-label="Hold to lock entry">
-          <div id="track" class="barTrack">
-            <div id="fill" class="barFill"></div>
-            <div class="ticks" aria-hidden="true">
-              <span class="tick"></span>
-              <span class="tick"></span>
-              <span class="tick"></span>
-              <span class="tick"></span>
-              <span class="tick"></span>
-              <span class="tick"></span>
-              <span class="tick"></span>
-              <span class="tick"></span>
+            <div class="formWrap">
+              <div class="label">Enter your nick name</div>
+              <input id="nickname" class="input" type="text" placeholder="enter your nick name" maxlength="24" />
             </div>
-            <div class="confetti" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
-            <div class="bolts" aria-hidden="true">
-              <span class="bolt b1"></span>
-              <span class="bolt b2"></span>
-              <span class="bolt b3"></span>
-              <span class="bolt b4"></span>
+
+            <div class="buttons">
+              <button id="nextBtn" class="button is-primary ctaBtn">Next</button>
             </div>
           </div>
 
+          <div id="step2" class="step" style="text-align:center;">
+            <img class="logo" src="assets/tx-logo.png" alt="IQOS Together X" style="margin-bottom: var(--space-2); margin-left:auto; margin-right:auto;">
+            <div class="cta" style="font-size: 16px; letter-spacing: .8px; margin-bottom: var(--space-2);">HOW MANY WAVES ARE IN IQOS TOGETHERX THIS YEAR?</div>
 
-            <div class="copy">
-              <div id="cta" class="cta idleGlow">Hold to lock entry</div>
-              <div id="sub" class="hint"></div>
-            </div>
+            <div class="label">Select your answer</div>
+            <div id="choices" class="choices"></div>
           </div>
 
-          <div id="status" class="status"></div>
-          <div class="hud">SYS: READY • SIGNAL: STANDBY</div>
-          <div id="lockedBadge" class="lockedBadge">Locked</div>
-          <div id="entryNumber" class="entryNumber"></div>
+          <div id="step3" class="step" style="text-align:center;">
+            <img class="logo" src="assets/tx-logo.png" alt="IQOS Together X" style="margin-bottom: var(--space-2); margin-left:auto; margin-right:auto;">
+            <div class="cta" style="font-size: 16px; letter-spacing: .8px; margin-bottom: var(--space-2);">HOW MANY YEARS HAS IQOS TOGETHERX BEEN LIVE?</div>
 
-          <div class="buttons">
-            <button id="holdBtn" class="button is-primary">Hold</button>
+            <div class="label">Select your answer</div>
+            <div id="choices2" class="choices"></div>
+          </div>
+
+          <div id="step4" class="step" style="text-align:center;">
+            <img class="logo" src="assets/tx-logo.png" alt="IQOS Together X" style="margin-bottom: var(--space-2); margin-left:auto; margin-right:auto;">
+            <div class="cta" style="font-size: 16px; letter-spacing: .8px; margin-bottom: var(--space-2);">YOU EARNED THE CHANCE TO SPIN THE WHEEL FOR A PRIZE!</div>
+
+            <div class="wheelWrap">
+              <div id="wheel" class="wheel" aria-label="Roulette wheel">
+                <div class="wheelText t1">WIN</div>
+                <div class="wheelText t2">WIN</div>
+                <div class="wheelText t3">WIN</div>
+                <div class="wheelText t4">WIN</div>
+              </div>
+              <button id="spinBtn" class="button is-primary ctaBtn">Click</button>
+            </div>
           </div>
         </div>
       </div>
@@ -551,195 +698,143 @@
     <span class="spark s18"></span>
   </div>
   <div class="flash" aria-hidden="true"></div>
+  <div id="badOverlay" class="popupOverlay"></div>
+  <div id="badPopup" class="popup" aria-hidden="true">
+    <div class="popupCard">
+      <div class="cta" style="font-size: 16px;">TOO BAD</div>
+    </div>
+  </div>
+  <div id="winOverlay" class="popupOverlay"></div>
+  <div id="winPopup" class="popup" aria-hidden="true">
+    <div class="popupCard">
+      <div class="popupText">WINNERS WILL BE ANNOUNCED ON THE MAIN SCREEN</div>
+    </div>
+  </div>
+  <div id="correctOverlay" class="popupOverlay"></div>
+  <div id="correctPopup" class="popup" aria-hidden="true">
+    <div class="popupCard">
+      <div class="correctText">CORRECT!</div>
+    </div>
+  </div>
+  <div class="correctShower" aria-hidden="true">
+    <span class="cspark c1"></span>
+    <span class="cspark c2"></span>
+    <span class="cspark c3"></span>
+    <span class="cspark c4"></span>
+    <span class="cspark c5"></span>
+    <span class="cspark c6"></span>
+    <span class="cspark c7"></span>
+    <span class="cspark c8"></span>
+    <span class="cspark c9"></span>
+  </div>
 
 <script>
-  // ===== SETTINGS =====
-  const HOLD_MS = 1800;
-  const LOADING_MS = 0;
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+  const step4 = document.getElementById("step4");
+  const nextBtn = document.getElementById("nextBtn");
+  const nickname = document.getElementById("nickname");
+  const choices = document.getElementById("choices");
+  const choices2 = document.getElementById("choices2");
+  const badOverlay = document.getElementById("badOverlay");
+  const badPopup = document.getElementById("badPopup");
+  const winOverlay = document.getElementById("winOverlay");
+  const winPopup = document.getElementById("winPopup");
+  const correctOverlay = document.getElementById("correctOverlay");
+  const correctPopup = document.getElementById("correctPopup");
+  const wheel = document.getElementById("wheel");
+  const spinBtn = document.getElementById("spinBtn");
+  let correctTimer = null;
 
-  // ===== ELEMENTS =====
-  const wrap = document.getElementById("wrap");
-  const fill = document.getElementById("fill");
-  const status = document.getElementById("status");
-  const cta = document.getElementById("cta");
-  const sub = document.getElementById("sub");
-  const holdBtn = document.getElementById("holdBtn");
-  const lockedBadge = document.getElementById("lockedBadge");
-  const entryNumber = document.getElementById("entryNumber");
-  const ticks = Array.from(document.querySelectorAll(".tick"));
-
-  // ===== STATE =====
-  let holding = false;
-  let startAt = 0;
-  let raf = null;
-  let locked = false;
-  let loading = false;
-  let flashTimer = null;
-  let audioCtx = null;
-
-  function setFill(pct){
-    const clamped = Math.max(0, Math.min(1, pct));
-    // ease-out for a softer feel
-    const eased = 1 - Math.pow(1 - clamped, 2);
-    fill.style.setProperty("--h", `${eased * 100}%`);
-    const onCount = Math.floor(eased * ticks.length);
-    ticks.forEach((t, i) => t.classList.toggle("on", i < onCount));
-  }
-  function show(text){ status.textContent = text; }
-
-  function playSparkSound(){
-    try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
-      osc.connect(gain).connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.14);
-    } catch (e) {
-      // ignore audio errors
-    }
+  function correctShower(){
+    document.body.classList.add("correctOn");
+    correctOverlay.style.display = "block";
+    correctPopup.style.display = "grid";
+    if (correctTimer) clearTimeout(correctTimer);
+    correctTimer = setTimeout(() => {
+      document.body.classList.remove("correctOn");
+      correctOverlay.style.display = "none";
+      correctPopup.style.display = "none";
+    }, 1500);
   }
 
-
-  function resetAll(){
-    holding = false;
-    startAt = 0;
-    locked = false;
-    loading = false;
-    if (flashTimer) clearTimeout(flashTimer);
-    flashTimer = null;
-    document.body.classList.remove("flashOn");
-    document.body.classList.remove("shower");
-    wrap.classList.remove("pressed","success");
-    cta.textContent = "Hold to lock entry";
-    cta.classList.remove("locked");
-    cta.classList.add("idleGlow");
-    sub.textContent = "";
-    sub.classList.remove("locked");
-    show("");
-    setFill(0);
-    lockedBadge.style.display = "";
-    entryNumber.textContent = "";
-    holdBtn.style.display = "";
-    document.querySelector(".hud").textContent = "SYS: READY • SIGNAL: STANDBY";
-    holdBtn.disabled = false;
-    holdBtn.textContent = "Hold";
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
+  function buildChoices(){
+    choices.innerHTML = "";
+    const opts = [2, 3, 4, 900];
+    opts.forEach(n => {
+      const btn = document.createElement("button");
+      btn.className = "choiceBtn";
+      btn.textContent = `${n}`;
+      btn.addEventListener("click", () => {
+        if (n === 4) {
+          correctShower();
+          setTimeout(() => {
+            step2.classList.remove("active");
+            step3.classList.add("active");
+            buildChoices2();
+          }, 900);
+        } else {
+          badOverlay.style.display = "block";
+          badPopup.style.display = "grid";
+        }
+      });
+      choices.appendChild(btn);
+    });
   }
 
-  async function onComplete(){
-    loading = true;
-    wrap.classList.remove("pressed");
-    holdBtn.disabled = true;
-    if (LOADING_MS > 0) await new Promise(r => setTimeout(r, LOADING_MS));
-
-    loading = false;
-    locked = true;
-    wrap.classList.add("success");
-    document.body.classList.add("shower");
-    document.body.classList.add("flashOn");
-    if (flashTimer) clearTimeout(flashTimer);
-    flashTimer = setTimeout(() => {
-      document.body.classList.remove("flashOn");
-      flashTimer = null;
-    }, 220);
-    cta.textContent = "Entry locked";
-    cta.classList.add("locked");
-    cta.classList.remove("idleGlow");
-    sub.textContent = "WATCH FOR THE SIGNAL";
-    sub.classList.add("locked");
-    show("");
-    setFill(1);
-    const num = String(Math.floor(Math.random() * 9000) + 1000);
-    entryNumber.textContent = `Entry #${num}`;
-    entryNumber.classList.remove("reveal");
-    // trigger reflow to restart animation
-    void entryNumber.offsetWidth;
-    entryNumber.classList.add("reveal");
-    holdBtn.style.display = "none";
-    document.querySelector(".hud").textContent = "SYS: LOCKED • SIGNAL: LIVE";
-
-    if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
-    playSparkSound();
+  function buildChoices2(){
+    choices2.innerHTML = "";
+    const opts2 = [2, 3, 4, 5];
+    opts2.forEach(n => {
+      const btn = document.createElement("button");
+      btn.className = "choiceBtn";
+      btn.textContent = `${n}`;
+      btn.addEventListener("click", () => {
+        if (n === 3) {
+          correctShower();
+          setTimeout(() => {
+            step3.classList.remove("active");
+            step4.classList.add("active");
+            spinBtn.focus();
+          }, 900);
+        } else {
+          badOverlay.style.display = "block";
+          badPopup.style.display = "grid";
+        }
+      });
+      choices2.appendChild(btn);
+    });
   }
+  let spinning = false;
+  spinBtn.addEventListener("click", () => {
+    if (spinning) return;
+    spinning = true;
+    const spins = 3 + Math.floor(Math.random() * 3); // 3-5
+    const angle = Math.floor(Math.random() * 360);
+    wheel.style.transform = `rotate(${spins * 360 + angle}deg)`;
+    setTimeout(() => {
+      spinning = false;
+      winOverlay.style.display = "block";
+      winPopup.style.display = "grid";
+    }, 5000);
+  });
 
-  function tick(){
-    if (!holding) return;
-    const elapsed = Date.now() - startAt;
-    const pct = Math.min(1, elapsed / HOLD_MS);
-    setFill(pct);
-
-    if (elapsed >= HOLD_MS){
-      holding = false;
-      onComplete();
+  nextBtn.addEventListener("click", () => {
+    if (!nickname.value.trim()) {
+      nickname.focus();
+      nickname.placeholder = "please enter a nickname";
       return;
     }
-    raf = requestAnimationFrame(tick);
-  }
+    step1.classList.remove("active");
+    step2.classList.add("active");
+    buildChoices();
+  });
 
-  function startHold(e){
-    if (locked || loading) return;
-    e.preventDefault();
-    if (holding) return;
-
-    holding = true;
-    startAt = Date.now();
-    wrap.classList.add("pressed");
-
-    show("");
-    cta.textContent = "Holding…";
-    cta.classList.remove("locked");
-    cta.classList.remove("idleGlow");
-    sub.textContent = "";
-    sub.classList.remove("locked");
-    document.querySelector(".hud").textContent = "SYS: ARMING • SIGNAL: CHARGING";
-
-    tick();
-  }
-
-  function cancelHold(e){
-    if (!holding) return;
-    e.preventDefault();
-
-    holding = false;
-    wrap.classList.remove("pressed");
-
-    cta.textContent = "Hold to lock entry";
-    cta.classList.remove("locked");
-    cta.classList.add("idleGlow");
-    sub.textContent = "";
-    sub.classList.remove("locked");
-    setFill(0);
-    document.querySelector(".hud").textContent = "SYS: READY • SIGNAL: STANDBY";
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
-
-    if (navigator.vibrate) navigator.vibrate(15);
-  }
-
-  // Hold on the button to fill
-  holdBtn.addEventListener("pointerdown", startHold);
-  holdBtn.addEventListener("pointerup", cancelHold);
-  holdBtn.addEventListener("pointercancel", cancelHold);
-  holdBtn.addEventListener("pointerleave", cancelHold);
-  holdBtn.addEventListener("click", (e) => e.preventDefault());
-
-  // Optional: double-tap anywhere to reset
-  let lastTap = 0;
-  window.addEventListener("touchend", () => {
-    const now = Date.now();
-    if (now - lastTap < 300) resetAll();
-    lastTap = now;
-  }, {passive:true});
-
-  resetAll();
+  badOverlay.addEventListener("click", () => {
+    badOverlay.style.display = "none";
+    badPopup.style.display = "none";
+  });
 </script>
 </body>
 </html>
